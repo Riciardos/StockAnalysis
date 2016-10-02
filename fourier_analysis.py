@@ -1,57 +1,60 @@
-## FOURIER ANALYSIS OF STOCKS, INDIVIDUAL AND INDEX
+# FOURIER ANALYSIS OF STOCKS, INDIVIDUAL AND INDEX
 
 
 import numpy as np
+import logging
 
 
-def discrete_fourier_transform(data, return_type ="cst"):
-    # Takes in market data and returns a list of constants of the Fourier series
-    # Keyword argument:
-    #                   return_type : dft for full transform, the same length
-    #                                 cst for constants
-    # TODO : integrate inverse dft
+def discrete_cosine_transform(data):
+    # Takes in market data and returns a list of constants of the Direct Cosine series
+    # Uses the DCT-IV algorithm so the same function can be used to calculate the inverse
 
     data_length = len(data)
-    f_k = np.zeros(data_length//2)
-    f_l = np.zeros(data_length//2)
-    f_const = 2/data_length
-    for k in range(0,data_length//2):
+    f_k = np.zeros(data_length)
+    f_const = np.sqrt(2/data_length)
+    for k in range(0, data_length):
         fksum = 0
-        flsum = 0
-        omega = f_const*k*np.pi
-        for n in range(0,data_length):
-            fksum += data[n]*np.cos(n*omega)
-            flsum += data[n]*np.sin(n*omega)
+        omega = (np.pi/data_length)*(k + 0.5)
+        for n in range(0, data_length):
+            fksum += data[n]*np.cos((n + 0.5)*omega)
         f_k[k] = f_const*fksum
-        f_l[k] = f_const*flsum
 
-    type_dic = {"dft":0,"cst":[f_k,f_l]}
-
-    return type_dic[return_type]
+    return f_k
 
 
-def calc_ft_error(data, ftcst, return_type ="abs"):
-    # Just calculate the error between actual data and Fourier series.
+def calc_ft_error(data, ftcst, return_type ='abs'):
+    # Just calculate the error between actual data and Fourier series constructed from list of constants
     # Return dictionary with info ( absolute/relative error)
-    # TODO : everything
+    simulated_data = inverse_fourier_transform(ftcst, len(ftcst), len(data))
+    diff_sum = 0
 
-    return_dic = {"abs":0,"rel":1}
-    return return_dic[return_type]
+    if return_type == 'abs':
+        for i in range(0, len(data)):
+            diff_sum += abs(data[i] - simulated_data[i])
+
+    if return_type == 'rel':
+        for i in range(0, len(data)):
+            diff_sum += abs(data[i] - simulated_data[i])/data[i]
+    else:
+        logging.debug('No proper type given in error calculation')
+
+    return diff_sum
 
 
 def minimize_error(data, type = "absolute"):
+    # TODO : find usage for this; some machine learning algorithm probably
+    data_fft_cst = discrete_cosine_transform(data)
 
-    data_fft_cst = fourier_transform(data)
-
-    err = calc_ftt_error(data, data_fft_cst)
+    err = calc_ft_error(data, data_fft_cst)
 
 
 def inverse_fourier_transform(cst_list, num_of_terms = 10, data_length = 128, order_type = "normal"):
     # Takes in numpy array of Fourier Transform constants
     # Needs number of terms, number of data points it needs to map to and the order type:
-    # Normal is counting from term zero upwards, "Largest" sorts the terms from largest to smallest
+    # Normal is counting from term zero upwards, "descending" sorts the terms from largest to smallest
+    # TODO : Don't use this, use discrete_cosine_transform for now
 
-    assert num_of_terms < len(cst_list[0]) , "Number of terms exceeds number of constants"
+    assert num_of_terms < len(cst_list[0]), logging.debug("Number of terms exceeds number of constants")
     a_n = cst_list[0]
     b_n = cst_list[1]
 
@@ -63,6 +66,6 @@ def inverse_fourier_transform(cst_list, num_of_terms = 10, data_length = 128, or
     omega = 2*np.pi/data_length
     for i in range(0,data_length):
         for n in range(0,num_of_terms):
-            data[i] += 0.5*(a_n[n]*np.cos(n*omega*i) + b_n[n]*np.sin(n*omega*i))
+            data[i] += (a_n[n]*np.cos(n*omega*i) + b_n[n]*np.sin(n*omega*i))
 
     return data

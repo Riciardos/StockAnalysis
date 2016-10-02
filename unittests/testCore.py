@@ -1,13 +1,13 @@
+
+""" Test suite for core.py"""
 import unittest
+import numpy as np
 
 
-class TestCoreMethods(unittest.TestCase):
+class TestCore(unittest.TestCase):
 
-    def test_fft(self):
-        self.assert
-
-from core import *
-
+    # TODO : everything
+    pass
 
 if __name__ == '__main__':
     unittest.main()

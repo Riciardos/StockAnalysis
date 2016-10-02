@@ -1,5 +1,7 @@
-### Technical indicator functions.
+# Technical indicator functions.
 import numpy as np
+import logging
+
 
 def moving_average(data, period):
 
@@ -16,21 +18,30 @@ def moving_average(data, period):
     return ma_array
 
 
-def rsi(data,period):
+def rsi(data, period):
 
-    # TODO : fix fast algorithm for circular lists (pop first element and add one to the end)
-    
-    rsi_array = np.zeros(data)
+    # TODO : Still needs to fix this completely
+    assert period > 0, logging.debug("Period needs to be positive.")
+
+    rsi_array = np.zeros_like(data)
     sum_up = 0
     sum_down = 0
+    counter_up = 0
+    counter_down = 0
+    average_up = 1
+    average_down = 1
 
-    for i in range(0,len(data)-1):
+    for i in range(period,len(data)-1):
+
         if data[i] <= data[i+1]:
-            sum_up += data[i+1] - data[i]
+            sum_up += data[i+1] - data[i] - (data[i - period + 1] - data[i - period])
+            average_up = sum_up / period
 
         else:
-            sum_down += data[i+1] -data[i]
-        average_up = sum_up/period
-        average_down = sum_down/period
+            sum_down += data[i+1] - data[i] - (data[i - period + 1] - data[i - period])
+            average_down = sum_down/period
 
-        rsi_array[i] = 100 - (100/(1+ (average_up/average_down)))
+        rsi_array[i] = 100 - (100/(1 + (average_up/average_down)))
+
+    return rsi_array
+
