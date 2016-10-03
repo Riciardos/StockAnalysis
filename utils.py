@@ -1,18 +1,15 @@
-# Utility classes and functions
-
-# Linked list
+"""Utility classes and functions."""
 
 
 class Node(object):
-
+    """Node used for linked lists."""
     def __init__(self, data):
         self.data = data  # contains data
         self.next = None  # contains reference to next node
 
 
 class RSILL(object):
-    # Custom linked list class for RSI so calculations can be done in constant time
-
+    """Custom linked list class for RSI so calculating the average can be done in constant time."""
     def __init__(self, max_length):
         self.first = None
         self.last = None
@@ -53,7 +50,7 @@ class RSILL(object):
         return self.sum/self.length
 
     def is_full(self):
-        if self.length == self.max_length:
+        if self.length >= self.max_length:
             return True
         else:
             return False

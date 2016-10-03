@@ -1,6 +1,4 @@
 
-# TODO : Everything
-
 """Test suite for indicators.py"""
 
 import unittest
@@ -18,7 +16,8 @@ class TestIndicators(unittest.TestCase):
 
     def test_moving_average_constant(self):
         x = np.ones(len(self.real_data))
-        moving_average = ind.moving_average(self.real_data, 14)
+        moving_average = ind.moving_average(x, 14)
+        self.assertEqual(1.0, moving_average[20])
 
     def test_rsi_period(self):
         with self.assertRaises(AssertionError):

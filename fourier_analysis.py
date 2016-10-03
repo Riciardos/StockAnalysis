@@ -1,13 +1,12 @@
-# FOURIER ANALYSIS OF STOCKS, INDIVIDUAL AND INDEX
-
+"""Fourier Analysis module, anything with frequencies goes in here."""
 
 import numpy as np
 import logging
 
 
 def discrete_cosine_transform(data):
-    # Takes in market data and returns a list of constants of the Direct Cosine series
-    # Uses the DCT-IV algorithm so the same function can be used to calculate the inverse
+    """Takes in market data and returns a list of constants of the Direct Cosine series.
+    Uses the DCT-IV algorithm so the same function can be used to calculate the inverse."""
 
     data_length = len(data)
     f_k = np.zeros(data_length)
@@ -41,7 +40,7 @@ def calc_ft_error(data, ftcst, return_type ='abs'):
     return diff_sum
 
 
-def minimize_error(data, type = "absolute"):
+def minimize_error(data, margin, type = 'rel',):
     # TODO : find usage for this; some machine learning algorithm probably
     data_fft_cst = discrete_cosine_transform(data)
 
