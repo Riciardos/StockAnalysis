@@ -2,6 +2,7 @@ import csv
 import urllib.request
 import traceback
 import logging
+import numpy as np
 
 # This link is just here for testing atm, should be done from config file
 aex_links = {'RDS':"https://euronext.com/en/products/equities/GB00B03MLX29-XAMS#"}
@@ -35,14 +36,14 @@ class DataGrabber(object):
 
         return None
 
-    def csv_to_list(self, path_to_csv_file, csv_type ="default"):
+    def csv_to_numpy_array(self, path_to_csv_file, csv_type ="default"):
 
         with open(path_to_csv_file, 'r') as f:
             reader = csv.reader(f)
             data_list = list(reader)
 
         data_list = data_list[4:]
-        data_points = []
+        data = np.zeros(len(data_list))
         for i in range(0, len(data_list)):
-            data_points.append(float(data_list[i][3]))
-        return data_points
+            data[i] = float(data_list[i][3])
+        return data

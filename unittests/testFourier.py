@@ -12,7 +12,7 @@ class TestFourierAnalysis(unittest.TestCase):
 
     def setUp(self):
         self.x = np.linspace(-np.pi, np.pi, 201)
-        self.sin_x = np.sin(x)
+        self.sin_x = np.sin(self.x)
 
     def test_discrete_fourier_transform(self):
         constant = [1.0]
