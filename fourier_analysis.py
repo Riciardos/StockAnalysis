@@ -68,3 +68,20 @@ def inverse_fourier_transform(cst_list, num_of_terms = 10, data_length = 128, or
             data[i] += (a_n[n]*np.cos(n*omega*i) + b_n[n]*np.sin(n*omega*i))
 
     return data
+
+
+def fast_fourier_transform(data, n):
+    """Fast Fourier Transform, a recursive DFT function that uses the Cooley-Tukey algorithm.
+    n is the length of the data, needed for normalization; is assummed to be power of 2."""
+    data = np.asarray(data, dtype='complex')
+    data_length = data.shape[0]
+
+    if data_length == 1:
+        return data/np.sqrt(n)  # 1/sqrt(n) constant is chosen so the same function can be used to calculate inverse
+
+    else:
+        data_even = fast_fourier_transform(data[::2], n)
+        data_odd = fast_fourier_transform(data[1::2], n)
+        factor = np.exp(-2j*np.pi*np.arange(data_length)/data_length)
+        return np.concatenate([data_even + factor[:data_length//2]*data_odd,
+                              data_even - factor[:data_length//2]*data_odd])

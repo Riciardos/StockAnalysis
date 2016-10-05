@@ -63,3 +63,15 @@ class RSILL(object):
             node = node.next
         print("End")
 
+
+def folding(array):
+    """Folds a 1D array on itself, meaning array[0] += array[-1], array[1] += array [-2] ect.
+    Second half is all flattened to zero."""
+
+    for i in range(0,len(array)//2):
+        array[i] += array[-(i + 1)]
+
+    for i in range(len(array)//2, len(array)):
+        array[i] = 0
+
+    return array
