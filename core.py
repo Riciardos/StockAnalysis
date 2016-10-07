@@ -1,7 +1,7 @@
 # Core of Stock Analysis program.
 #
 
-# TODO : see comments
+# TODO : see comments, right now core is used as testing area for if stuff works
 
 
 # Locate Data on the web

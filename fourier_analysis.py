@@ -6,7 +6,8 @@ import logging
 
 def discrete_cosine_transform(data):
     """Takes in market data and returns a list of constants of the Direct Cosine series.
-    Uses the DCT-IV algorithm so the same function can be used to calculate the inverse."""
+    Uses the DCT-IV algorithm so the same function can be used to calculate the inverse.
+    Note: is very slow, use only for small data sets. Use fast_fourier_transform for larger ones"""
 
     data_length = len(data)
     f_k = np.zeros(data_length)
@@ -24,8 +25,15 @@ def discrete_cosine_transform(data):
 def calc_ft_error(data, ftcst, return_type ='abs'):
     # Just calculate the error between actual data and Fourier series constructed from list of constants
     # Return dictionary with info ( absolute/relative error)
-    simulated_data = inverse_fourier_transform(ftcst, len(ftcst), len(data))
+    simulated_data = fast_fourier_transform(ftcst, len(ftcst))
     diff_sum = 0
+    is_normalized = norm_check(data, simulated_data)
+
+    if not is_normalized:
+        logging.debug("FFT constants returned non normalized simulated data, thread with care.")
+        norm = find_norm(data, simulated_data)
+        for i in range(0,len(simulated_data)):
+            simulated_data[i] *= norm
 
     if return_type == 'abs':
         for i in range(0, len(data)):
@@ -85,3 +93,29 @@ def fast_fourier_transform(data, n):
         factor = np.exp(-2j*np.pi*np.arange(data_length)/data_length)
         return np.concatenate([data_even + factor[:data_length//2]*data_odd,
                               data_even - factor[:data_length//2]*data_odd])
+
+
+def norm_check(data, simulated_data, error_margin = 0.01):
+    """"norm_check checks if two data sets are of the same size,
+    and checks if maximum values are within a error margin. Default error margin is 1%."""
+
+    if len(data) != len(simulated_data):
+        logging.debug("Length of data sets not the same")
+        return False
+    elif abs(1 - (max(simulated_data)/max(data))) > error_margin:
+        logging.debug("Maximum values of arrays not within error_margin.")
+        return False
+    else:
+        return True
+
+
+def find_norm(data, sdata):
+    """Find_norm goes over every data point of two sets, finds the ratio, and returns the average.
+       Assumes data and sdata share the same length."""
+
+    average_sum = 0
+
+    for i in range(0, len(data)):
+        average_sum += data[i]/sdata[i]
+
+    return average_sum/len(data)
